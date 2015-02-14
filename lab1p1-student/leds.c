@@ -28,7 +28,7 @@ void initSW2(){
     //pcfg4 refers to an4 (pin6)
     CNPU1bits.CN6PUE = 1; //enable the internal pull up resistor
     //cn6pue refers to using the pu for cn pin 6
-    TRISBbits.TRISB2 = 0;//set rb 2 as an input
+    TRISBbits.TRISB2 = 0;//set rb 2 as an input (rb2 = pin6 = io5)
     IFS1bits.CNIF = 0;//put down cni flag
     IEC1bits.CNIE = 1;//enable global cn interrupt flag
     CNEN1bits.CN6IE = 1;//enable cn for pin 6 (io5)

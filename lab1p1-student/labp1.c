@@ -27,8 +27,8 @@ typedef enum stateTypeEnum{
     debounceRelease
 } stateType;
 
-volatile stateType curState;
-volatile int debounce = 5;
+volatile stateType curState, nextState;
+volatile int DEBOUNCE_DELAY_US = 5000; //5000us = 5ms
 
 int main(void)
 {
@@ -41,15 +41,24 @@ int main(void)
         switch(curState){
             case run:
                 STOP = OFF;
-
+                RUN = ON;
                 break;
             case stop:
+                //turn off run led and turn on stop led
+                RUN = OFF;
+                STOP = ON;
                 break;
             case debouncePress:
-                delayMs(5);
+                //debounce 5ms then go to next state so debounce only occurs
+                //per button press
+                delayMs(DEBOUNCE_DELAY_US);
+                curState = nextState;
                 break;
             case debounceRelease:
-                delayMs(5);
+                //debounce 5ms then go to next state so debounce only occurs
+                //per button release
+                delayMs(DEBOUNCE_DELAY_US);
+                curState = nextState;
                 break;
 
         }
@@ -61,6 +70,19 @@ int main(void)
 
 void _ISR _CNInterrupt(void){
     //if our switch is pressed we need to debounce
-    if ()
+    if (PORTBbits.RB2 == PRESSED){
+        //so we know what state we were in after debounce
+        //don't want to switch states until button release
+        nextState = curState;
+        //go to debounce
+        curState = debouncePress;
+    }
+    else {
+        if (curState == run) nextState = stop;
+        else if (curState == stop) nextState = run;
+
+        //goto debounce
+        curState = debounceRelease;
+    }
 
 }
