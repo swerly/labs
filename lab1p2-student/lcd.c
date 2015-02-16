@@ -34,6 +34,7 @@
  * when you are simply writing a character. Otherwise, RS is '0'.
  */
 void writeFourBits(unsigned char word, unsigned int commandType, unsigned int delayAfter, unsigned int lower){
+    //TODO: use bit shifting instead of single bit operations
     if (lower){
         LCD_D7 = word<3>;
         LCD_D6 = word<2>;
@@ -46,6 +47,10 @@ void writeFourBits(unsigned char word, unsigned int commandType, unsigned int de
         LCD_D5 = word<5>;
         LCD_D4 = word<4>;
     }
+    LCD_RS = 1;
+
+    LCD_E = 1; delayUs(1);//enable high
+    LCD_E = 0; delayUs(1);//enable low
 
 }
 
@@ -53,15 +58,14 @@ void writeFourBits(unsigned char word, unsigned int commandType, unsigned int de
  * to the LCD.
  */
 void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAfter){
-    //TODO:
-    //writeFourBits (UPPER)
-    //writeFourBits (LOWER)
+    writeFourBits(word, commandType, delayAfter, 0); // write upper 4 bits
+    writeFourBits(word, commandType, delayAfter, 1); // write lower 4 bits
 }
 
 /* Given a character, write it to the LCD. RS should be set to the appropriate value.
  */
 void printCharLCD(char c) {
-    //writeLCD
+    writeLCD(c, 1, )
 }
 /*Initialize the LCD
  */
@@ -143,7 +147,11 @@ void initLCD(void) {
  * Since a string is just a character array, try to be clever with your use of pointers.
  */
 void printStringLCD(const char* s) {
-    //TODO:
+    int i=0;
+
+    for (; s[i] != '\0'; i++){
+        printCharLCD(s[i]);
+    }
 }
 
 /*
@@ -156,6 +164,9 @@ void clearLCD(){
  Use the command for changing the DD RAM address to put the cursor somewhere.
  */
 void moveCursorLCD(unsigned char x, unsigned char y){
+    if (y){
+        if (x ==   )
+    }
 }
 
 /*
