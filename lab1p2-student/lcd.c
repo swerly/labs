@@ -149,7 +149,7 @@ void initLCD(void) {
 void printStringLCD(const char* s) {
     int i=0;
 
-    for (; s[i] != '\0'; i++){
+    for (i = 0; s[i] != '\0'; i++){
         printCharLCD(s[i]);
     }
 }
@@ -165,7 +165,7 @@ void clearLCD(){
  */
 void moveCursorLCD(unsigned char x, unsigned char y){
     if (y){
-        if (x ==   )
+        if (x == 1) 
     }
 }
 

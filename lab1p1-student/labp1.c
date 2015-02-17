@@ -51,13 +51,13 @@ int main(void)
             case debouncePress:
                 //debounce 5ms then go to next state so debounce only occurs
                 //per button press
-                delayMs(DEBOUNCE_DELAY_US);
+                delayUs(DEBOUNCE_DELAY_US);
                 curState = nextState;
                 break;
             case debounceRelease:
                 //debounce 5ms then go to next state so debounce only occurs
                 //per button release
-                delayMs(DEBOUNCE_DELAY_US);
+                delayUs(DEBOUNCE_DELAY_US);
                 curState = nextState;
                 break;
 
@@ -69,11 +69,14 @@ int main(void)
 }
 
 void _ISR _CNInterrupt(void){
+    IFS1bits.CNIF = 0; //put down flag
+    
     //if our switch is pressed we need to debounce
     if (PORTBbits.RB2 == PRESSED){
         //so we know what state we were in after debounce
         //don't want to switch states until button release
-        nextState = curState;
+       if(curState != debouncePress && curState != debounceRelease)//i hate this line of code.
+           nextState = curState;
         //go to debounce
         curState = debouncePress;
     }

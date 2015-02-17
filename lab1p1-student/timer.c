@@ -11,22 +11,24 @@
 #define FCY 14745600
 #define oneUS 1 //time for one microsecond using ps of 8
 
-//Uses timer 2
+//Uses timer 3
 void delayUs(unsigned int delay){
     //MAX DELAY: ~65500us = 65.5ms
 
     //reset timer to 0 just in case
-    TMR2 = 0;
+    TMR3 = 0;
 
-    //set pr2
-    PR2 = delay*oneUS;
+    //set pr3
+    PR3 = delay*oneUS;
     T2CONbits.TCKPS = 0b01; //prescalar 8
-    IFS0bits.T2IF = 0; //put down interrupt flag
-    T2CONbits.TON = 1; //turn the timer on
+    IFS0bits.T3IF = 0; //put down interrupt flag
+    T3CONbits.TON = 1; //turn the timer on
 
-    while(IFS0bits.T2IF == 0);//wait until the timer flag goes up
+    while(!IFS0bits.T3IF){
+        if(TMR3 > PR3) break;
+    }
 
-    IFS0bits.T2IF = 0; // Put the flag down afterwards.
-    T2CONbits.TON = 0; // Turn the timer off so it does not keep counting.
+    IFS0bits.T3IF = 0;
+    T3CONbits.TON = 0;
 
 }
