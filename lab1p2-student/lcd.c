@@ -9,14 +9,12 @@
 #include "lcd.h"
 #include "timer.h"
 
+#define LOWER = 1
+#define UPPER = 0
+
 #define LCD_DATA   LATB
 #define LCD_RS  LATBbits.LATB7
 #define LCD_E   LATBbits.LATB6
-
-#define LCD_D7 LATBbits.LATB15
-#define LCD_D6 LATBbits.LATB14
-#define LCD_D5 LATBbits.LATB13
-#define LCD_D4 LATBbits.LATB12
 
 
 #define TRIS_D7  TRISBbits.TRISB15
@@ -35,22 +33,24 @@
  */
 void writeFourBits(unsigned char word, unsigned int commandType, unsigned int delayAfter, unsigned int lower){
     //TODO: use bit shifting instead of single bit operations
-    if (lower){
-        LCD_D7 = word<3>;
-        LCD_D6 = word<2>;
-        LCD_D5 = word<1>;
-        LCD_D4 = word<0>;
+    if(lower){
+        LATBbits.LATB15 = word<3>;
+        LATBbits.LATB14 = word<2>;
+        LATBbits.LATB13 = word<1>;
+        LATBbits.LATB12 = word<0>;
     }
-    else {
-        LCD_D7 = word<7>;
-        LCD_D6 = word<6>;
-        LCD_D5 = word<5>;
-        LCD_D4 = word<4>;
+    else{
+        LATBbits.LATB15 = word<7>;
+        LATBbits.LATB14 = word<6>;
+        LATBbits.LATB13 = word<5>;
+        LATBbits.LATB12 = word<4>;
     }
-    LCD_RS = 1;
+    LCD_RS = commandType; delayUs(1);
 
     LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    LCD_E = 0; //enable low
+    
+    delayUs(delayAfter);
 
 }
 
@@ -65,13 +65,18 @@ void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAf
 /* Given a character, write it to the LCD. RS should be set to the appropriate value.
  */
 void printCharLCD(char c) {
-    writeLCD(c, 1, )
+    writeLCD(c, 1, 46);
 }
 /*Initialize the LCD
  */
 void initLCD(void) {
     // Setup D, RS, and E to be outputs (0).
-    TRIS_D7, TRIS_D6, TRIS_D5, TRIS_D4, TRIS_RS, TRIS_E = 0;
+    TRIS_D7 = 0;
+    TRIS_D6 = 0;
+    TRIS_D5 = 0;
+    TRIS_D4 = 0;
+    TRIS_RS = 0;
+    TRIS_E = 0;
     // Initilization sequence utilizes specific LCD commands before the general configuration
     // commands can be utilized. The first few initilition commands cannot be done using the
     // WriteLCD function. Additionally, the specific sequence and timing is very important.
@@ -79,66 +84,33 @@ void initLCD(void) {
     //Wait 15ms after LCD turned on
     delayUs(15000);
     //=========================================================
-    LCD_D4, LCD_D5 = 1; //set data bits 4,5 to high
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
-
-    delayUs(4100);//delay 4.1ms before next step
+    writeFourBits(0x03, 1, 4100, LOWER);//0011
     //=========================================================
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
-
-    delayUs(100); //wait 100us or more
+    writeFourBits(0x03, 1, 100, LOWER);//0011
     //=========================================================
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x03, 1, 1, LOWER);//0011
     //=========================================================
-    // Enable 4-bit interface
-    LCD_D4 = 0; //set d4 low
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x02, 1, 3, LOWER);//0010
     //=========================================================
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x02, 1, 3, LOWER);//0010
 
-    LCD_D7 = 1;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x0A, 1, 3, LOWER);//1010
     //=========================================================
-    LCD_D7 = 0;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x00, 1, 3, LOWER);//0000
 
-    LCD_D7 = 1;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x08, 1, 3, LOWER);//1000
     //=========================================================
-    LCD_D7 = 0;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x00, 1, 3, LOWER);//0000
 
-    LCD_D4 = 1;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x01, 1, 3, LOWER);//0001
     //=========================================================
-    LCD_D4 = 0;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x00, 1, 3, LOWER);//0000
 
-    LCD_D6 = 1;
-    LCD_E = 1; delayUs(1);//enable high
-    LCD_E = 0; delayUs(1);//enable low
+    writeFourBits(0x06, 1, 3, LOWER);//0110
 
-    // 4-bit mode initialization is complete. We can now configure the various LCD
-    // options to control how the LCD will function.
+    //DONE
 
-    // TODO: Display On/Off Control
-        // Turn Display (D) Off
-    // TODO: Clear Display (The delay is not specified in the data sheet at this point. You really need to have the clear display delay here.
-    // TODO: Entry Mode Set
-        // Set Increment Display, No Shift (i.e. cursor move)
-    // TODO: Display On/Off Control
-        // Turn Display (D) On, Cursor (C) Off, and Blink(B) Off
+
 }
 
 /*
@@ -149,6 +121,7 @@ void initLCD(void) {
 void printStringLCD(const char* s) {
     int i=0;
 
+    //while we haven't reached the null char at the end of a string
     for (i = 0; s[i] != '\0'; i++){
         printCharLCD(s[i]);
     }
@@ -158,14 +131,35 @@ void printStringLCD(const char* s) {
  * Clear the display.
  */
 void clearLCD(){
+    writeFourBits(0x01, 1, 3, UPPER);
+    writeFourBits(0x01, 1, 3, LOWER);
 }
 
 /*
  Use the command for changing the DD RAM address to put the cursor somewhere.
  */
 void moveCursorLCD(unsigned char x, unsigned char y){
+    //if in the top row
     if (y){
-        if (x == 1) 
+        if (x == 1); //write 0x00
+        else if (x==2); //write 0x01
+        else if (x==3); //write 0x02
+        else if (x==4); //write 0x03
+        else if (x==5); //write 0x04
+        else if (x==6); //write 0x05
+        else if (x==7); //write 0x06
+        else if (x==8); //write 0x07
+    }
+    //else in the bottom row
+    else {
+        if (x == 1); //write 0x40
+        else if (x==2); //write 0x41
+        else if (x==3); //write 0x42
+        else if (x==4); //write 0x43
+        else if (x==5); //write 0x44
+        else if (x==6); //write 0x45
+        else if (x==7); //write 0x46
+        else if (x==8); //write 0x47
     }
 }
 
@@ -179,9 +173,9 @@ void testLCD(){
     int i = 0;
     printCharLCD('c');
     for(i = 0; i < 1000; i++) delayUs(1000);
-    clearLCD();
+  //  clearLCD();
     printStringLCD("Hello!");
-    moveCursorLCD(1, 2);
+   // moveCursorLCD(1, 2);
     for(i = 0; i < 1000; i++) delayUs(1000);
     printStringLCD("Hello!");
     for(i = 0; i < 1000; i++) delayUs(1000);
