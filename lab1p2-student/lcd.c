@@ -9,13 +9,18 @@
 #include "lcd.h"
 #include "timer.h"
 
-#define LOWER = 1
-#define UPPER = 0
+#define LOWER 1
+#define UPPER 0
 
 #define LCD_DATA   LATB
 #define LCD_RS  LATBbits.LATB7
 #define LCD_E   LATBbits.LATB6
 
+#define WRITE_DATA 1
+#define SEND_COMMAND 0
+
+#define LCD_DDRAM 0x80
+#define LCD_ROW2 0x40
 
 #define TRIS_D7  TRISBbits.TRISB15
 #define TRIS_D6  TRISBbits.TRISB14
@@ -34,16 +39,11 @@
 void writeFourBits(unsigned char word, unsigned int commandType, unsigned int delayAfter, unsigned int lower){
     //TODO: use bit shifting instead of single bit operations
     if(lower){
-        LATBbits.LATB15 = word<3>;
-        LATBbits.LATB14 = word<2>;
-        LATBbits.LATB13 = word<1>;
-        LATBbits.LATB12 = word<0>;
+        //change data pins to 0, then or them with top 4 bits
+        LCD_DATA = (LCD_DATA & 0x0FFF) | ((word & 0x0F)<<12);//shift to get into latb 15-12
     }
     else{
-        LATBbits.LATB15 = word<7>;
-        LATBbits.LATB14 = word<6>;
-        LATBbits.LATB13 = word<5>;
-        LATBbits.LATB12 = word<4>;
+        LCD_DATA = (LCD_DATA & 0x0FFF) | ((word & 0xF0)<<8);//shift to get into latb 15-12
     }
     LCD_RS = commandType; delayUs(1);
 
@@ -58,14 +58,14 @@ void writeFourBits(unsigned char word, unsigned int commandType, unsigned int de
  * to the LCD.
  */
 void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAfter){
-    writeFourBits(word, commandType, delayAfter, 0); // write upper 4 bits
-    writeFourBits(word, commandType, delayAfter, 1); // write lower 4 bits
+    writeFourBits(word, commandType, delayAfter, UPPER); // write upper 4 bits
+    writeFourBits(word, commandType, delayAfter, LOWER); // write lower 4 bits
 }
 
 /* Given a character, write it to the LCD. RS should be set to the appropriate value.
  */
 void printCharLCD(char c) {
-    writeLCD(c, 1, 46);
+    writeLCD(c, WRITE_DATA, 46);
 }
 /*Initialize the LCD
  */
@@ -84,30 +84,40 @@ void initLCD(void) {
     //Wait 15ms after LCD turned on
     delayUs(15000);
     //=========================================================
-    writeFourBits(0x03, 1, 4100, LOWER);//0011
+    writeFourBits(0x03, SEND_COMMAND, 4100, LOWER);//0011
     //=========================================================
-    writeFourBits(0x03, 1, 100, LOWER);//0011
+    writeFourBits(0x03, SEND_COMMAND, 100, LOWER);//0011
     //=========================================================
-    writeFourBits(0x03, 1, 1, LOWER);//0011
+    writeFourBits(0x03, SEND_COMMAND, 40, LOWER);//0011
     //=========================================================
-    writeFourBits(0x02, 1, 3, LOWER);//0010
+    writeFourBits(0x02, SEND_COMMAND, 40, LOWER);//0010
     //=========================================================
-    writeFourBits(0x02, 1, 3, LOWER);//0010
+    writeFourBits(0x02, SEND_COMMAND, 40, LOWER);//0010
 
-    writeFourBits(0x0A, 1, 3, LOWER);//1010
+    writeFourBits(0x08, SEND_COMMAND, 40, LOWER);//1010
     //=========================================================
-    writeFourBits(0x00, 1, 3, LOWER);//0000
+    writeFourBits(0x00, SEND_COMMAND, 40, LOWER);//0000
 
-    writeFourBits(0x08, 1, 3, LOWER);//1000
+    writeFourBits(0x08, SEND_COMMAND, 40, LOWER);//1000
     //=========================================================
-    writeFourBits(0x00, 1, 3, LOWER);//0000
+    writeFourBits(0x00, SEND_COMMAND, 40, LOWER);//0000
 
-    writeFourBits(0x01, 1, 3, LOWER);//0001
+    writeFourBits(0x01, SEND_COMMAND, 1640, LOWER);//0001
     //=========================================================
-    writeFourBits(0x00, 1, 3, LOWER);//0000
+    writeFourBits(0x00, SEND_COMMAND, 40, LOWER);//0000
 
-    writeFourBits(0x06, 1, 3, LOWER);//0110
+    writeFourBits(0x06, SEND_COMMAND, 40, LOWER);//0110
+    //=========================================================
+    writeFourBits(0x01, SEND_COMMAND, 40, UPPER);
 
+    writeFourBits(0x01, SEND_COMMAND, 1640, LOWER);
+    //=========================================================
+    writeFourBits(0x0E, SEND_COMMAND, 40, UPPER);
+
+    writeFourBits(0x0E, SEND_COMMAND, 40, LOWER);
+
+
+    //
     //DONE
 
 
@@ -131,8 +141,8 @@ void printStringLCD(const char* s) {
  * Clear the display.
  */
 void clearLCD(){
-    writeFourBits(0x01, 1, 3, UPPER);
-    writeFourBits(0x01, 1, 3, LOWER);
+    writeFourBits(0x01, SEND_COMMAND, 40, UPPER);
+    writeFourBits(0x01, SEND_COMMAND, 1640, LOWER);
 }
 
 /*
@@ -140,26 +150,12 @@ void clearLCD(){
  */
 void moveCursorLCD(unsigned char x, unsigned char y){
     //if in the top row
-    if (y){
-        if (x == 1); //write 0x00
-        else if (x==2); //write 0x01
-        else if (x==3); //write 0x02
-        else if (x==4); //write 0x03
-        else if (x==5); //write 0x04
-        else if (x==6); //write 0x05
-        else if (x==7); //write 0x06
-        else if (x==8); //write 0x07
+    
+    if (x == 0){
+        writeLCD((LCD_DDRAM | y), SEND_COMMAND, 50);
     }
-    //else in the bottom row
     else {
-        if (x == 1); //write 0x40
-        else if (x==2); //write 0x41
-        else if (x==3); //write 0x42
-        else if (x==4); //write 0x43
-        else if (x==5); //write 0x44
-        else if (x==6); //write 0x45
-        else if (x==7); //write 0x46
-        else if (x==8); //write 0x47
+        writeLCD((LCD_DDRAM | y | LCD_ROW2), SEND_COMMAND, 50);
     }
 }
 
@@ -170,13 +166,15 @@ void moveCursorLCD(unsigned char x, unsigned char y){
  */
 void testLCD(){
     initLCD();
+
     int i = 0;
     printCharLCD('c');
     for(i = 0; i < 1000; i++) delayUs(1000);
-  //  clearLCD();
+    clearLCD();
     printStringLCD("Hello!");
-   // moveCursorLCD(1, 2);
+    moveCursorLCD(2, 1);
     for(i = 0; i < 1000; i++) delayUs(1000);
     printStringLCD("Hello!");
     for(i = 0; i < 1000; i++) delayUs(1000);
+    
 }

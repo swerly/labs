@@ -22,14 +22,6 @@ void initLEDs(){
     RUN = OFF;
 
 }
-/*
-void initSW1(){
-    TRISBbits.TRISB5 = 1;
-    IFS1bits.CNIF = 0; //set overall CN interrupt flag to 0
-    IEC1bits.CNIE = 1; //enable interrupts system wide
-    CNEN2bits.CN27IE = 1;//enable CN interrupt for sw1 (cn27 from datasheet)
-}*/
-
 
 void initSW2(){
     AD1PCFGbits.PCFG4 = 1;//set analot input to be digital

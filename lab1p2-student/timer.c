@@ -9,7 +9,7 @@
 #include "timer.h"
 
 #define FCY 14745600
-#define oneUS 1 //time for one microsecond using ps of 8
+#define oneUS 14//time for one microsecond using ps of 8
 
 //Uses timer 2
 void delayUs(unsigned int delay){
@@ -20,7 +20,7 @@ void delayUs(unsigned int delay){
 
     //set pr2
     PR2 = delay*oneUS;
-    T2CONbits.TCKPS = 0b01; //prescalar 8
+    T2CONbits.TCKPS = 0b00; //prescalar 8
     IFS0bits.T2IF = 0; //put down interrupt flag
     T2CONbits.TON = 1; //turn the timer on
 
@@ -28,5 +28,4 @@ void delayUs(unsigned int delay){
 
     IFS0bits.T2IF = 0; // Put the flag down afterwards.
     T2CONbits.TON = 0; // Turn the timer off so it does not keep counting.
-
 }
