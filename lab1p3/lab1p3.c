@@ -36,7 +36,7 @@ typedef enum stateTypeEnum{
 
 volatile stateType curState, nextState;
 volatile int DEBOUNCE_DELAY_US = 5000;
-volatile int min = 0, sec = 0, ms = 0, rsP = 0;
+volatile int min = 0, sec = 0, hs = 0, rsP = 0, ssP = 0, ms=0, i;
 volatile char* time;
 
 
@@ -46,22 +46,17 @@ int main(void)
     initSW1();
     initSW2();
     initLCD();
-    initTMR3();
+    initTMR2();
 
     curState = stop;
 
     while(1){
-        printTime(getTimeString(min, sec, ms));
-        clearCursor();
-
+        printTime(getTimeString(min, sec, hs));
         switch (curState){
             case run:
                 STOP = OFF;
                 RUN = ON;
                 printRunning();
-                min = 0;
-                sec = 0;
-                ms = 0;
                 break;
 
             case stop:
@@ -81,9 +76,9 @@ int main(void)
                 break;
 
             case reset:
-                min = 99;
-                sec = 99;
-                ms = 99;
+                min = 0;
+                sec = 0;
+                hs = 0;
                 curState = stop;
         }
     }
@@ -91,20 +86,21 @@ int main(void)
     return 0;
 }
 
-void _ISR _TMR3Interrupt(){
-    IFS0bits.T3IF = 0;//put down flag
+void _ISR _T2Interrupt(){
+    IFS0bits.T2IF = 0;//put down flag
 
     if (curState == run){//if we are in the run state
-        if (ms > 99){ //need to increment seconds
-            ms = 0; //reset ms
+        hs+=1;
+
+        if (hs > 99){ //need to increment seconds
+            hs = 0; //reset ms
+            sec+=1;
 
             if (sec > 59){ //need to increment minutes
                 sec = 0; //reset seconds
                 min +=1;
             }
-            else sec+=1;//else just increment seconds
         }
-        else ms+=1;//else just increment ms
     }
 }
 
@@ -136,14 +132,17 @@ void _ISR _CNInterrupt(){
            nextState = curState;
         //go to debounce
         curState = debouncePress;
+
+        ssP = 1;
     }
-    else if (RUN_STOP == RELEASED){
+    else if (RUN_STOP == RELEASED && ssP == 1){
         if (curState == run){
                 nextState = stop;
         }
         else if (curState == stop) nextState = run;
          //goto debounce
         curState = debounceRelease;
+        ssP=0;
     }
 }
 

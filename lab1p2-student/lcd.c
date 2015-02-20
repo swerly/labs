@@ -178,3 +178,7 @@ void testLCD(){
     for(i = 0; i < 1000; i++) delayUs(1000);
     
 }
+
+int testWriteLCD(void){
+    while(1) writeLCD('c',1,50);
+}

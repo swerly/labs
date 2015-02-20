@@ -8,7 +8,7 @@
 #ifndef INITTIMER_H
 #define	INITTIMER_H
 
-void initTMR3();
+void initTMR4();
 char* getTimeString(int min, int sec, int ms);
 void delayUs(unsigned int delay);
 

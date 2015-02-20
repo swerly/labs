@@ -59,10 +59,10 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200                0x9e            0xed  (237)
 .const                       0x29e                 0x8             0xc  (12)
-.text                        0x2a6               0x24e           0x375  (885)
-.dinit                       0x4f4                 0x2             0x3  (3)
+.text                        0x2a6               0x25c           0x38a  (906)
+.dinit                       0x502                 0x2             0x3  (3)
 
-                     Total program memory used (bytes):          0x471  (1137) 1%
+                     Total program memory used (bytes):          0x486  (1158) 1%
 
 
 Data Memory  [Origin = 0x800, Length = 0x2000]
@@ -87,8 +87,8 @@ External Symbols in Program Memory (by address):
 
                   0x000200                  __resetPRI
                   0x00022c                  __psv_init
-                  0x00023c                  __data_init
                   0x00023c                  __data_init_standard
+                  0x00023c                  __data_init
                   0x00029a                  __DefaultInterrupt
                   0x0002a6                  _writeFourBits
                   0x000306                  _writeLCD
@@ -98,8 +98,9 @@ External Symbols in Program Memory (by address):
                   0x00041a                  _clearLCD
                   0x000434                  _moveCursorLCD
                   0x000462                  _testLCD
-                  0x0004be                  _delayUs
-                  0x0004ee                  _main
+                  0x0004be                  _testWriteLCD
+                  0x0004ca                  _delayUs
+                  0x0004fa                  _main
 
 External Symbols in Program Memory (by name):
 
@@ -109,13 +110,14 @@ External Symbols in Program Memory (by name):
                   0x00022c                  __psv_init
                   0x000200                  __resetPRI
                   0x00041a                  _clearLCD
-                  0x0004be                  _delayUs
+                  0x0004ca                  _delayUs
                   0x000338                  _initLCD
-                  0x0004ee                  _main
+                  0x0004fa                  _main
                   0x000434                  _moveCursorLCD
                   0x000326                  _printCharLCD
                   0x0003ee                  _printStringLCD
                   0x000462                  _testLCD
+                  0x0004be                  _testWriteLCD
                   0x0002a6                  _writeFourBits
                   0x000306                  _writeLCD
 
@@ -189,30 +191,30 @@ __CONFIG1         0x00abfe          0x2
 .comment
  *(.comment)
 
-.debug_info       0x000000        0xa81
+.debug_info       0x000000        0xac8
  *(.debug_info)
  .debug_info      0x000000        0x379 build/default/production/timer.o
- .debug_info      0x000379        0x5d2 build/default/production/lcd.o
- .debug_info      0x00094b        0x136 build/default/production/lab1p2.o
+ .debug_info      0x000379        0x5f2 build/default/production/lcd.o
+ .debug_info      0x00096b        0x15d build/default/production/lab1p2.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000        0x249
+.debug_abbrev     0x000000        0x281
  *(.debug_abbrev)
  .debug_abbrev    0x000000        0x10b build/default/production/timer.o
- .debug_abbrev    0x00010b         0xf7 build/default/production/lcd.o
- .debug_abbrev    0x000202         0x47 build/default/production/lab1p2.o
+ .debug_abbrev    0x00010b        0x10e build/default/production/lcd.o
+ .debug_abbrev    0x000219         0x68 build/default/production/lab1p2.o
 
-.debug_line       0x000000        0x48f
+.debug_line       0x000000        0x4b1
  *(.debug_line)
  .debug_line      0x000000         0xe6 build/default/production/timer.o
- .debug_line      0x0000e6        0x2fa build/default/production/lcd.o
- .debug_line      0x0003e0         0xaf build/default/production/lab1p2.o
+ .debug_line      0x0000e6        0x314 build/default/production/lcd.o
+ .debug_line      0x0003fa         0xb7 build/default/production/lab1p2.o
 
-.debug_frame      0x000000         0xdc
+.debug_frame      0x000000         0xec
  *(.debug_frame)
  .debug_frame     0x000000         0x24 build/default/production/timer.o
- .debug_frame     0x000024         0x94 build/default/production/lcd.o
- .debug_frame     0x0000b8         0x24 build/default/production/lab1p2.o
+ .debug_frame     0x000024         0xa4 build/default/production/lcd.o
+ .debug_frame     0x0000c8         0x24 build/default/production/lab1p2.o
 
 .debug_str        0x000000         0x3d
  *(.debug_str)
@@ -226,14 +228,14 @@ __CONFIG1         0x00abfe          0x2
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000         0xdf
+                  0x000000         0xf0
  *(.debug_pubnames)
  .debug_pubnames
                   0x000000         0x1e build/default/production/timer.o
  .debug_pubnames
-                  0x00001e         0x8c build/default/production/lcd.o
+                  0x00001e         0x9d build/default/production/lcd.o
  .debug_pubnames
-                  0x0000aa         0x35 build/default/production/lab1p2.o
+                  0x0000bb         0x35 build/default/production/lab1p2.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -1112,8 +1114,8 @@ __c30_signature
 .const              0x829e          0x8 load address 0x00029e  
  .const             0x829e          0x8 build/default/production/lcd.o
 
-.text             0x0002a6        0x24e
- .text            0x0002a6        0x218 build/default/production/lcd.o
+.text             0x0002a6        0x25c
+ .text            0x0002a6        0x224 build/default/production/lcd.o
                   0x0002a6                  _writeFourBits
                   0x000306                  _writeLCD
                   0x000326                  _printCharLCD
@@ -1122,10 +1124,11 @@ __c30_signature
                   0x00041a                  _clearLCD
                   0x000434                  _moveCursorLCD
                   0x000462                  _testLCD
- .text            0x0004be         0x30 build/default/production/timer.o
-                  0x0004be                  _delayUs
- .text            0x0004ee          0x6 build/default/production/lab1p2.o
-                  0x0004ee                  _main
+                  0x0004be                  _testWriteLCD
+ .text            0x0004ca         0x30 build/default/production/timer.o
+                  0x0004ca                  _delayUs
+ .text            0x0004fa          0x8 build/default/production/lab1p2.o
+                  0x0004fa                  _main
 
-.dinit            0x0004f4          0x2
- .dinit           0x0004f4          0x2 data_init
+.dinit            0x000502          0x2
+ .dinit           0x000502          0x2 data_init

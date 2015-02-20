@@ -10,26 +10,24 @@
 #include <stdio.h>
 
 #define FCY 14745600
-#define DELAY_TEN_MS 575 //ten ms
 #define oneUS 14//time for one microsecond using ps of 8
 
-void initTMR3(){
-    PR3 = DELAY_TEN_MS;
+void initTMR2(){
+    PR2 = ((.01*FCY)/256)-1;
 
-    T3CONbits.TCKPS = 0b11; //prescalar 256
-    IEC0bits.T3IE = 1; //timer 1 interrupt enable
-    IFS0bits.T3IF = 0; //timer 1 interrupt flag put down
-    T3CONbits.TON = 1; //timer 1 on
+    T2CONbits.TCKPS = 0b11; //prescalar 256
+    IFS0bits.T2IF = 0;
+    IEC0bits.T2IE = 1;
+    T2CONbits.TON = 1; //timer 1 on
 }
 
-//Uses timer 2
+//Uses timer 1
 void delayUs(unsigned int delay){
     //MAX DELAY: ~65500us = 65.5ms
-
     //reset timer to 0 just in case
     TMR1 = 0;
 
-    //set pr2
+    //set pr1
     PR1 = delay*oneUS;
     T1CONbits.TCKPS = 0b00; //prescalar 1
     IFS0bits.T1IF = 0; //put down interrupt flag
