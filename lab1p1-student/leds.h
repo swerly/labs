@@ -14,8 +14,11 @@
 #define ON 0
 #define PRESSED 0
 #define RELEASED 1
+#define RUN_STOP PORTBbits.RB2
+#define RESET PORTBbits.RB5
 
 void initLEDs();
+void initSW1();
 void initSW2();
 
 #endif	/* LEDS_H */
