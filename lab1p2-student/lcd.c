@@ -112,9 +112,9 @@ void initLCD(void) {
 
     writeFourBits(0x01, SEND_COMMAND, 1640, LOWER);
     //=========================================================
-    writeFourBits(0x0E, SEND_COMMAND, 40, UPPER);
+    writeFourBits(0x0C, SEND_COMMAND, 40, UPPER);
 
-    writeFourBits(0x0E, SEND_COMMAND, 40, LOWER);
+    writeFourBits(0x0C, SEND_COMMAND, 40, LOWER);
 
 
     //
