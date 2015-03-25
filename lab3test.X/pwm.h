@@ -12,12 +12,13 @@
 #define MOTOR_ONE 1
 #define MOTOR_TWO 2
 #define FORWARD 0
-#define BACKWARD 1
+#define REVERSE 1
 
-void initLCDPWM(void);
+void initLCDPWM();
 void initMotorPWM();
 void setDutyCycle(int motor, int percent);
 void setDirection(int dir);
+void testMotors();
 
 #endif	/* PWM_H */
 

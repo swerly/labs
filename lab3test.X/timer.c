@@ -40,3 +40,4 @@ void delayUs(unsigned int delay){
     IFS0bits.T1IF = 0; // Put the flag down afterwards.
     T1CONbits.TON = 0; // Turn the timer off so it does not keep counting.
 }
+
