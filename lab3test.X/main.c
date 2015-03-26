@@ -34,6 +34,7 @@ int main(void){
 
     initLCD();
     initADC();
+    initTimer2();
     initLCDPWM();
     initMotorOnePWM(); //TODO: take pictures of output on oscope
     initMotorTwoPWM();
@@ -92,7 +93,7 @@ void _ISR _ADC1Interrupt(void){
     ad0val = ADC1BUF0; //pull the value from the buffer
 }
 
-void _ISR _T1Interrupt(void){
+void _ISR _T2Interrupt(void){
     //Put down the timer 1 flag first!
     IFS0bits.T1IF = 0;
 
