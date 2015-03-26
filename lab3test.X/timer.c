@@ -11,6 +11,7 @@
 
 #define FCY 14745600
 #define oneUS 14//time for one microsecond using ps of 8
+#define TIME_DELAY 1
 
 void initTMR2(){
     PR2 = ((.01*FCY)/256)-1;
@@ -19,6 +20,19 @@ void initTMR2(){
     IFS0bits.T2IF = 0;
     IEC0bits.T2IE = 1;
     T2CONbits.TON = 1; //timer 1 on
+}
+
+void initTimer1(){
+    //this timer will go off every .5s. So we need to run through 4 of these
+    //to equal the 2s timer we want
+    unsigned int prVal = ((FCY*TIME_DELAY)/256) - 1;
+    PR1 = prVal;
+
+    T1CONbits.TCKPS = 0b11; //prescalar 256
+    IEC0bits.T1IE = 1; //timer 1 interrupt enable
+    IFS0bits.T1IF = 0; //timer 1 interrupt flag put down
+    T1CONbits.TON = 1; //timer 1 on
+
 }
 
 //Uses timer 1

@@ -1,3 +1,5 @@
 build/default/production/pwm.o:  \
 pwm.c  \
-pwm.h 
+pwm.h  \
+timer.h  \
+lcd.h 
