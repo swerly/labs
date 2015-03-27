@@ -21,16 +21,16 @@
 
 void initTimer2(){
     unsigned int prVal = ((FCY*TIME_DELAY)/256) - 1;
-    PR1 = prVal;
+    PR2 = prVal;
 
     T2CONbits.TCKPS = 0b11; //prescalar 256
-    IEC0bits.T2IE = 1; //timer 2 interrupt enable
-    IFS0bits.T2IF = 0; //timer 2 interrupt flag put down
-    T2CONbits.TON = 1; //timer 2 on
+    IEC0bits.T2IE = 1; //timer 1 interrupt enable
+    IFS0bits.T2IF = 0; //timer 1 interrupt flag put down
+    T2CONbits.TON = 1; //timer 1 on
 
 }
 
-//Uses timer 2
+//Uses timer 1
 void delayUs(unsigned int delay){
     //MAX DELAY: ~65500us = 65.5ms
     //reset timer to 0 just in case

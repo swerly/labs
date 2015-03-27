@@ -18,7 +18,7 @@ void initLCDPWM(){
 
     OC1R = 0; //sets to the beginning of the period
     OC1RS = 10; //~.9 volts give the best display contrast
-    T3CONbits.TON = 1;
+    
 }
 
 //sets motor one to be going forward initially
@@ -58,45 +58,68 @@ void setDutyCycle(int motor, float percent){
     }
 }
 
-void setDirection(int dir){
+void setDirection(int motor, int dir){
     //TODO: figure out why it's not switching from reverse to forward
 
     if (dir == FORWARD){
-        
-        ODCBbits.ODB3 = 1; //opposite terminal of the motor to odc
-        ODCBbits.ODB2 = 0; //turn off odc for pin 6 (RP2)
-        RPOR1bits.RP2R = 19; //map OC2 to pin 6 (RP2)
 
-        ///WHY ISN"T THIS WORKINGNGNGNGNGNGN
-        ODCBbits.ODB9 = 1;
-        ODCBbits.ODB8 = 0;
-        RPOR4bits.RP8R = 20;
+        if (motor == MOTOR_ONE){
+            RPOR1bits.RP3R = 0; //map NOTHING to pin 7 (RP3)
+            ODCBbits.ODB3 = 1; //opposite terminal of the motor to odc
+            ODCBbits.ODB2 = 0; //turn off odc for pin 6 (RP2)
+            RPOR1bits.RP2R = 19; //map OC2 to pin 6 (RP2)
+        }
+
+        if (motor == MOTOR_TWO){
+            RPOR4bits.RP9R = 0; //map NOTHING to pin 18 (RP9)
+            ODCBbits.ODB9 = 1;
+            ODCBbits.ODB8 = 0;
+            RPOR4bits.RP8R = 20;
+        }
     }
     else if (dir == REVERSE){
-        
-        ODCBbits.ODB2 = 1; //opposite terminal of the motor to odc
-        ODCBbits.ODB3 = 0; //turn off odc for pin 7 (RP3)
-        RPOR1bits.RP3R = 19; //map OC2 to pin 7 (RP3)
 
-        
-        ODCBbits.ODB8 = 1; //turn on odc for pin 17
-        ODCBbits.ODB9 = 0; //turn off odc for pin 18
-        RPOR4bits.RP9R = 20; //map OC3 to pin 18 (RP9)
+        if (motor == MOTOR_ONE){
+            RPOR1bits.RP2R = 0; //map NOTHING to pin 6 (RP2)
+            ODCBbits.ODB2 = 1; //opposite terminal of the motor to odc
+            ODCBbits.ODB3 = 0; //turn off odc for pin 7 (RP3)
+            RPOR1bits.RP3R = 19; //map OC2 to pin 7 (RP3)
+        }
+
+        if (motor == MOTOR_TWO){
+            RPOR4bits.RP8R = 0;//map NOTHING to pin 17 (RP8)
+            ODCBbits.ODB8 = 1; //turn on odc for pin 17
+            ODCBbits.ODB9 = 0; //turn off odc for pin 18
+            RPOR4bits.RP9R = 20; //map OC3 to pin 18 (RP9)
+        }
     }
     delayUs(5); //delay so pins have time to change
 }
 
 void testPWM(){
     int i = 0;
-    setDirection(FORWARD);
-    OC2RS = 56;
-    OC3RS = 56;
-    moveCursorLCD(1,0);
-    printStringLCD("FORWARD ");
+    setDirection(MOTOR_ONE, FORWARD);
+    setDirection(MOTOR_TWO, FORWARD);
+    setDutyCycle(MOTOR_ONE, 50);
+    setDutyCycle(MOTOR_TWO, 50);
     for(i = 0; i<1000; i++) delayUs(2000);
-    moveCursorLCD(1,0);
-    printStringLCD("REVERSE ");
-    setDirection(REVERSE);
+    setDutyCycle(MOTOR_ONE, 75);
+    setDutyCycle(MOTOR_TWO, 75);
+    for(i = 0; i<1000; i++) delayUs(2000);
+    setDutyCycle(MOTOR_ONE, 100);
+    setDutyCycle(MOTOR_TWO, 100);
+    for(i = 0; i<1000; i++) delayUs(2000);
+
+    setDirection(MOTOR_ONE, REVERSE);
+    setDirection(MOTOR_TWO, REVERSE);
+    setDutyCycle(MOTOR_ONE, 50);
+    setDutyCycle(MOTOR_TWO, 50);
+    for(i = 0; i<1000; i++) delayUs(2000);
+    setDutyCycle(MOTOR_ONE, 75);
+    setDutyCycle(MOTOR_TWO, 75);
+    for(i = 0; i<1000; i++) delayUs(2000);
+    setDutyCycle(MOTOR_ONE, 100);
+    setDutyCycle(MOTOR_TWO, 100);
     for(i = 0; i<1000; i++) delayUs(2000);
 
 }

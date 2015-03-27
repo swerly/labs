@@ -19,7 +19,7 @@ void initLCDPWM();
 void initMotorOnePWM();
 void initMotorTwoPWM();
 void setDutyCycle(int motor, float percent);
-void setDirection(int dir);
+void setDirection(int motor, int dir);
 void testMotors();
 
 #endif	/* PWM_H */

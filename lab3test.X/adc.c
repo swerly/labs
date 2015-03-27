@@ -5,7 +5,7 @@ void initADC(void){
     TRISAbits.TRISA0 = 1;
     //TODO: convert commands to hex
     
-    AD1PCFGbits.PCFG0 = 0;  //Set pin 25 to analog
+    AD1PCFGbits.PCFG0 = 0;  
     AD1CON1bits.FORM = 0;
     AD1CON1bits.SSRC = 7;
     AD1CON1bits.ASAM = 1;
