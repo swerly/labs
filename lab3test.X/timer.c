@@ -19,14 +19,15 @@
 #define oneUS 14//time for one microsecond using ps of 8
 #define TIME_DELAY 1
 
-void initTimer2(){
+void initTimer5(){
+    //this timer will go off every 1s
     unsigned int prVal = ((FCY*TIME_DELAY)/256) - 1;
-    PR2 = prVal;
+    PR5 = prVal;
 
-    T2CONbits.TCKPS = 0b11; //prescalar 256
-    IEC0bits.T2IE = 1; //timer 1 interrupt enable
-    IFS0bits.T2IF = 0; //timer 1 interrupt flag put down
-    T2CONbits.TON = 1; //timer 1 on
+    T5CONbits.TCKPS = 0b11; //prescalar 256
+    IEC1bits.T5IE = 1; //timer 5 interrupt enable
+    IFS1bits.T5IF = 0; //timer 5 interrupt flag put down
+    T5CONbits.TON = 1; //timer 5 on
 
 }
 

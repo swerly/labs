@@ -15,19 +15,19 @@ _CONFIG2( IESO_OFF & SOSCSEL_SOSC & WUTSEL_LEG & FNOSC_PRIPLL & FCKSM_CSDCMD & O
           IOL1WAY_OFF & I2C1SEL_PRI & POSCMOD_XT )
 
 volatile int ad0val = 0,//holds the value read from adc1buf
-             done = 0,
              count = 0,
              dir = FORWARD;
 volatile double voltage;//holds the voltage. use double b/c compiler sprintf hates floats
-volatile float dutyCycle = 0;
+volatile float dutyCycle = 0,
+               pwm = 50;
 
 
 int main(void){
-    char v[10];
+    char v[10], test[10];
     
     initLCD();
     initADC();
-    //initTimer2(); //enabling this breaks everything for some reason?
+    initTimer5(); //enabling this breaks everything for some reason?
     initLCDPWM();
     initMotorOnePWM();
     initMotorTwoPWM();
@@ -35,16 +35,41 @@ int main(void){
 
     while(1){
 
-        /*
+        
 
         voltage = 3.3*((double)ad0val)/1023; //3.3 volts times the ratio
         moveCursorLCD(0,1);//move the cursor to center the text
         sprintf(v, "%.3f V", voltage); //make a new string out of the voltage float
         printStringLCD(v); //print the new string to the LCD
 
-         */
 
-        testPWM();
+        //TESTING IF COUNTER IS WORKING
+        sprintf(test, "%d", count);
+        moveCursorLCD(1,0);
+        printStringLCD(test);
+
+        //IF COUNTER WORKS ENABLE THIS CODE
+        /*
+        if (count >=2){ //if we have reached 2s we want to change duty cycle
+            if (pwm < 100){ //if we haven't reached max speed
+                pwm += 25;  //increase speed
+                setDutyCycle(BOTH,pwm);
+            }
+            else if (pwm >= 100){ //if we have reached max speed
+                pwm = 50;// reset pwm to 50
+                setDutyCycle(BOTH,pwm);
+
+                //change directions
+                if (dir = FORWARD) dir = REVERSE;
+                else if (dir == REVERSE) dir = FORWARD;
+                setDirection(BOTH, dir);
+            }
+         *
+        count = 0; //reset count
+        }
+        */
+
+
 
         }
     
@@ -57,11 +82,12 @@ void _ISR _ADC1Interrupt(void){
     ad0val = ADC1BUF0; //pull the value from the buffer
 }
 
-void _ISR _T2Interrupt(void){
+void _ISR _T5Interrupt(void){
     //Put down the timer 1 flag first!
-    IFS0bits.T1IF = 0;
+    IFS1bits.T5IF = 0;
 
     //timer will go off every second and we want to change duty cycle of motors
     //every two seconds, so increment count
     count++;
+
 }

@@ -10,6 +10,7 @@
 
 #define MOTOR_ONE 1
 #define MOTOR_TWO 2
+#define BOTH 3
 #define FORWARD 0
 #define REVERSE 1
 #define OUTPUT 0
