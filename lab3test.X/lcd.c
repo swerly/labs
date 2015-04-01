@@ -67,8 +67,7 @@ void writeLCD(unsigned char word, unsigned int commandType, unsigned int delayAf
 void printCharLCD(char c) {
     writeLCD(c, WRITE_DATA, 46);
 }
-/*Initialize the LCD
- */
+/*Initialize the LCD*/
 void initLCD(void) {
     // Setup D, RS, and E to be outputs (0).
     TRIS_D7 = 0;

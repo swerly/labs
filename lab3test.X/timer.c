@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 ///TIMER 1 USED IN DELAYUS FUNCTION
-///TIMER 2 USED FOR CONTROLLING MOTORS
+///TIMER 5 USED FOR CONTROLLING MOTORS
 ///TIMER 3 USED FOR PWM SIGNALS
 
 
@@ -18,6 +18,14 @@
 #define FCY 14745600
 #define oneUS 14//time for one microsecond using ps of 8
 #define TIME_DELAY 1
+#define PRVAL 56
+
+void initTimerPWM(){
+    T3CONbits.TCKPS = 256;
+    TMR3 = 0;
+    PR3 = PRVAL;
+    T3CONbits.TON = 1;
+}
 
 void initTimer5(){
     //this timer will go off every 1s

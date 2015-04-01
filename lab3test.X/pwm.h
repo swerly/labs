@@ -16,7 +16,6 @@
 #define OUTPUT 0
 #define INPUT 1
 
-void initLCDPWM();
 void initMotorOnePWM();
 void initMotorTwoPWM();
 void setDutyCycle(int motor, float percent);

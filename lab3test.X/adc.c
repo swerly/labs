@@ -11,7 +11,7 @@ void initADC(void){
     AD1CON1bits.ASAM = 1;
     AD1CON2bits.VCFG = 0;
     AD1CON2bits.CSCNA = 0;
-    AD1CON2bits.SMPI = 0b0000;
+    AD1CON2bits.SMPI = 0b1111;
     AD1CON2bits.ALTS = 0;
     AD1CON3bits.ADRC = 0;
     AD1CON3bits.SAMC = 1;
